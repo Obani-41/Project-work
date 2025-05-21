@@ -1013,6 +1013,84 @@
                 }
             }
         });
+       import { db } from './firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+const saveProduct = async (productData) => {
+  try {
+    // Include all fields + seller ID and timestamp
+    await addDoc(collection(db, 'products'), {
+      productName: productData.productName, // or "title"
+      price: productData.price,
+      description: productData.description,
+      contactDetails: productData.contactDetails, // e.g., email/phone
+      imageURL: productData.imageURL, // URL from Firebase Storage
+      sellerId: currentUser.uid, // Ensure you have the logged-in user's UID
+      timestamp: serverTimestamp()
+    });
+    console.log("Product saved successfully!");
+  } catch (error) {
+    console.error("Error saving product: ", error);
+  }
+}; 
+        import { db } from './firebase';
+import { collection, query, getDocs } from 'firebase/firestore';
+
+const fetchProducts = async () => {
+  const products = [];
+  const q = query(collection(db, 'products'));
+  
+  try {
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      products.push({
+        id: doc.id,
+        productName: data.productName,
+        price: data.price,
+        description: data.description,
+        contactDetails: data.contactDetails,
+        imageURL: data.imageURL,
+        sellerId: data.sellerId,
+        timestamp: data.timestamp
+      });
+    });
+    return products;
+  } catch (error) {
+    console.error("Error fetching products: ", error);
+    return [];
+  }
+};
+        function ProductList() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const fetchedProducts = await fetchProducts();
+      setProducts(fetchedProducts);
+    };
+    loadProducts();
+  }, []);
+
+  return (
+    <div className="product-grid">
+      {products.map((product) => (
+        <div key={product.id} className="product-card">
+          <img 
+            src={product.imageURL} 
+            alt={product.productName} 
+            className="product-image"
+          />
+          <h2>{product.productName}</h2>
+          <p>Price: ${product.price}</p>
+          <p>Description: {product.description}</p>
+          <p>Contact: {product.contactDetails}</p>
+          <small>Posted by: {product.sellerId}</small>
+        </div>
+      ))}
+    </div>
+  );
+        }
     </script>
 </body>
 </html>
