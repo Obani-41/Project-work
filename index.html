@@ -1061,36 +1061,6 @@ const fetchProducts = async () => {
     return [];
   }
 };
-        function ProductList() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      const fetchedProducts = await fetchProducts();
-      setProducts(fetchedProducts);
-    };
-    loadProducts();
-  }, []);
-
-  return (
-    <div className="product-grid">
-      {products.map((product) => (
-        <div key={product.id} className="product-card">
-          <img 
-            src={product.imageURL} 
-            alt={product.productName} 
-            className="product-image"
-          />
-          <h2>{product.productName}</h2>
-          <p>Price: ${product.price}</p>
-          <p>Description: {product.description}</p>
-          <p>Contact: {product.contactDetails}</p>
-          <small>Posted by: {product.sellerId}</small>
-        </div>
-      ))}
-    </div>
-  );
-        }
     </script>
 </body>
 </html>
