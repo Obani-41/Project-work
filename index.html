@@ -44,15 +44,16 @@
 <body class="bg-gray-50">
     <!-- Firebase Configuration -->
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNV5OwdprDPhB8mc9XzixJJfUl0jw4GJI",
-            authDomain: "blog-b9a62.firebaseapp.com",
-            projectId: "blog-b9a62",
-            storageBucket: "blog-b9a62.appspot.com",
-            messagingSenderId: "735392973459",
-            appId: "1:735392973459:web:64a810b3f9f9455efe4366",
-            measurementId: "G-DC8V348EWQ"
-        };
+       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBQpmOHix7lG6eDNZ24mS6XeDWjJ3jZY78",
+  authDomain: "web-app-8af86.firebaseapp.com",
+  projectId: "web-app-8af86",
+  storageBucket: "web-app-8af86.firebasestorage.app",
+  messagingSenderId: "992860277221",
+  appId: "1:992860277221:web:5a7f2c6d685ae80229470c",
+  measurementId: "G-5PVYQ0PQXF"
+};
         
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -81,8 +82,8 @@
                     </button>
                     <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                         <a href="#" onclick="showDashboard()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Dashboard</a>
-                        <a href="#" onclick="showDeals()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Deals</a>
-                        <a href="#" onclick="showSocials()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">My Chats</a>
+                        <a href="#" onclick="showMarketplace()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Deals</a>
+                        <a href="#" onclick="showChats()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">My Chats</a>
                         <a href="#" onclick="logout()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Logout</a>
                     </div>
                 </div>
@@ -98,7 +99,7 @@
             <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Buy and sell agricultural products directly from farmers across Uganda. Join our platform to grow your business.</p>
             <div class="flex justify-center space-x-4">
                 <button onclick="showAuthModal('signup')" class="px-6 py-3 rounded-lg gradient-bg text-white font-medium hover:opacity-90 transition">Get Started</button>
-                <button onclick="showDeals()" class="px-6 py-3 rounded-lg border border-green-600 text-green-600 font-medium hover:bg-green-50 transition">Browse Deals</button>
+                <button onclick="showMarketplace()" class="px-6 py-3 rounded-lg border border-green-600 text-green-600 font-medium hover:bg-green-50 transition">Browse Deals</button>
             </div>
         </section>
 
