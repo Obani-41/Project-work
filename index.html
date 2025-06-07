@@ -83,6 +83,7 @@ const firebaseConfig = {
                     <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                         <a href="#" onclick="showDashboard()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Dashboard</a>
                         <a href="#" onclick="showMarketplace()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Deals</a>
+                        <a href="#" onclick="showInformation()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Information</a>
                         <a href="#" onclick="showChats()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">My Chats</a>
                         <a href="#" onclick="logout()" class="block px-4 py-2 text-gray-800 hover:bg-green-50">Logout</a>
                     </div>
@@ -100,6 +101,7 @@ const firebaseConfig = {
             <div class="flex justify-center space-x-4">
                 <button onclick="showAuthModal('signup')" class="px-6 py-3 rounded-lg gradient-bg text-white font-medium hover:opacity-90 transition">Get Started</button>
                 <button onclick="showMarketplace()" class="px-6 py-3 rounded-lg border border-green-600 text-green-600 font-medium hover:bg-green-50 transition">Browse Deals</button>
+                <button onclick="showInformation()" class="px-6 py-3 rounded-lg border border-green-600 text-green-600 font-medium hover:bg-green-50 transition">Browse Information</button>
             </div>
         </section>
 
@@ -134,8 +136,13 @@ const firebaseConfig = {
                         <label for="signupName" class="block text-gray-700 mb-2">Full Name</label>
                         <input type="text" id="signupName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
-                        <label for="locatin" class="block text-gray-700 mb-2">Location</label>
+                    <div class="mb-4">
+                        <label for="location" class="block text-gray-700 mb-2">Location</label>
                         <input type="text" id="location" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="nationality" class="block text-gray-700 mb-2">Nationality</label>
+                        <input type="text" id="nationality" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                     <div class="mb-4">
                         <label for="signupEmail" class="block text-gray-700 mb-2">Email</label>
@@ -170,6 +177,9 @@ const firebaseConfig = {
                 <h2 class="text-2xl font-bold text-gray-800">Your Dashboard</h2>
                 <button onclick="showCreatePostModal()" class="px-4 py-2 gradient-bg text-white rounded-lg hover:opacity-90 transition">
                     <i class="fas fa-plus mr-2"></i> Create Post
+                </button>
+                <button onclick="showUploadBookModal()" class="px-4 py-2 gradient-bg text-white rounded-lg hover:opacity-90 transition">
+                    <i class="fas fa-plus mr-2"></i> Upload Book
                 </button>
             </div>
             
@@ -229,6 +239,115 @@ const firebaseConfig = {
             </div>
         </div>
 
+        <!-- Upload Book Modal -->
+        <div id="uploadBookModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Upload New Book</h3>
+                        <button onclick="hideUploadBookModal()" class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-times text-gray-500"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="postTitle" class="block text-gray-700 mb-2">Book Name:</label>
+                        <input type="text" id="postTitle" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="postAuthor" class="block text-gray-700 mb-2">Author:</label>
+                        <input type="text" id="postPrice" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="postDescription" class="block text-gray-700 mb-2">Description:</label>
+                        <textarea id="postDescription" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="postCreator" class="block text-gray-700 mb-2">Posted By:</label>
+                        <textarea id="postCreator" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="postContact" class="block text-gray-700 mb-2">Contact Details:</label>
+                        <input type="number" id="postContact" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h1>Upload and Display Text Files</h1>
+                        <input type="file" id="textFileInput" accept=".txt,.csv,.html,.json,.xml,.log,.md,.css,.js,.php,.py,.docx,.epub,.pdf">
+                        <p id="fileNameDisplay"></p>
+                        <div id="fileContent">
+                            Select a text file to display its content here.
+                        </div>
+                        <p class="error" id="errorMessage"></p>
+                    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('textFileInput');
+            const fileContentDiv = document.getElementById('fileContent');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const errorMessage = document.getElementById('errorMessage');
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0]; // Get the first selected file
+
+                if (!file) {
+                    fileContentDiv.textContent = 'No file selected.';
+                    fileNameDisplay.textContent = '';
+                    errorMessage.textContent = '';
+                    return;
+                }
+
+                // Check if the file type is a text-based type
+                const allowedTextTypes = [
+                    'text/plain', 'text/csv', 'text/html', 'application/json',
+                    'application/xml', 'text/xml', 'text/markdown', 'text/css',
+                    'application/javascript', 'application/x-php', 'text/x-python',
+                    'text/x-docx-source', 'text/x-docxsrc', 'text/x-pdfsrc'
+                ];
+                const fileType = file.type;
+
+                if (!allowedTextTypes.includes(fileType) && !file.name.endsWith('.log')) {
+                    errorMessage.textContent = 'Please select a valid text-based file type (.txt, .csv, .html, .json, .xml, .log, etc.).';
+                    fileContentDiv.textContent = '';
+                    fileNameDisplay.textContent = '';
+                    return;
+                } else {
+                    errorMessage.textContent = ''; // Clear previous errors
+                }
+
+
+                fileNameDisplay.textContent = `Selected File: ${file.name} (Size: ${file.size} bytes)`;
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    // Display the content of the file
+                    fileContentDiv.textContent = e.target.result;
+                };
+
+                reader.onerror = () => {
+                    fileContentDiv.textContent = 'Error reading file.';
+                    errorMessage.textContent = 'Could not read the selected file.';
+                };
+
+                // Read the file as text
+                reader.readAsText(file);
+            });
+        });
+    </script>
+                    </div>
+                    
+                    <button onclick="uploadBook()" class="w-full gradient-bg text-white py-3 rounded-lg font-medium hover:opacity-90 transition">Upload Book</button>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Marketplace -->
         <section id="marketplace" class="hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -251,6 +370,31 @@ const firebaseConfig = {
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="marketplacePosts">
                 <!-- Marketplace posts will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Marketplace -->
+        <section id="information" class="hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Information</h2>
+                
+                <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search books..." class="w-full md:w-64 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <!--<select id="priceFilter" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">All Prices</option>
+                        <option value="0-100000">Under 100,000 UGX</option>
+                        <option value="100000-500000">100,000 - 500,000 UGX</option>
+                        <option value="500000-1000000">500,000 - 1,000,000 UGX</option>
+                        <option value="1000000">Over 1,000,000 UGX</option>
+                    </select> -->
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="informationPosts">
+                <!-- Information posts will be loaded here -->
             </div>
         </section>
 
@@ -309,7 +453,7 @@ const firebaseConfig = {
                 <div class="flex space-x-6">
                     <a href="#" class="hover:text-green-200 transition"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="hover:text-green-200 transition"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="hover:text-green-200 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/oban.ai565/?hl=en" class="hover:text-green-200 transition"><i class="fab fa-instagram"></i></a>
                     <a href="#" class="hover:text-green-200 transition"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
@@ -333,6 +477,7 @@ const firebaseConfig = {
         const heroSection = document.getElementById('hero');
         const dashboardSection = document.getElementById('dashboard');
         const marketplaceSection = document.getElementById('marketplace');
+        const informationSection = document.getElementById('information');
         const chatSection = document.getElementById('chatSection');
         
         // Auth Modal Elements
@@ -360,6 +505,8 @@ const firebaseConfig = {
                                 showDashboard();
                             } else {
                                 showMarketplace();
+                            } else {
+                                showInformation();
                             }
                         }
                     });
@@ -401,10 +548,66 @@ const firebaseConfig = {
                     reader.readAsDataURL(file);
                 }
             });
+
+
+            document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('textFileInput');
+            const fileContentDiv = document.getElementById('fileContent');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const errorMessage = document.getElementById('errorMessage');
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0]; // Get the first selected file
+
+                if (!file) {
+                    fileContentDiv.textContent = 'No file selected.';
+                    fileNameDisplay.textContent = '';
+                    errorMessage.textContent = '';
+                    return;
+                }
+
+                // Check if the file type is a text-based type
+                const allowedTextTypes = [
+                    'text/plain', 'text/csv', 'text/html', 'application/json',
+                    'application/xml', 'text/xml', 'text/markdown', 'text/css',
+                    'application/javascript', 'application/x-php', 'text/x-python',
+                    'text/x-docx-source', 'text/x-docxsrc', 'text/x-pdfsrc'
+                ];
+                const fileType = file.type;
+
+                if (!allowedTextTypes.includes(fileType) && !file.name.endsWith('.log')) {
+                    errorMessage.textContent = 'Please select a valid text-based file type (.txt, .csv, .html, .json, .xml, .log, etc.).';
+                    fileContentDiv.textContent = '';
+                    fileNameDisplay.textContent = '';
+                    return;
+                } else {
+                    errorMessage.textContent = ''; // Clear previous errors
+                }
+
+
+                fileNameDisplay.textContent = `Selected File: ${file.name} (Size: ${file.size} bytes)`;
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    // Display the content of the file
+                    fileContentDiv.textContent = e.target.result;
+                };
+
+                reader.onerror = () => {
+                    fileContentDiv.textContent = 'Error reading file.';
+                    errorMessage.textContent = 'Could not read the selected file.';
+                };
+
+                // Read the file as text
+                reader.readAsText(file);
+            });
+        });
             
             // Setup search functionality
             const searchInput = document.getElementById('searchInput');
             const priceFilter = document.getElementById('priceFilter');
+            const nameFilter = document.getElementById('nameFilter');
             
             searchInput.addEventListener('input', debounce(function() {
                 loadMarketplacePosts();
@@ -412,6 +615,14 @@ const firebaseConfig = {
             
             priceFilter.addEventListener('change', function() {
                 loadMarketplacePosts();
+            });
+
+            searchInput.addEventListener('input', debounce(function() {
+                loadInformationPosts();
+            }, 300));
+            
+            nameFilter.addEventListener('change', function() {
+                loadInformationPosts();
             });
         });
         
@@ -449,6 +660,8 @@ const firebaseConfig = {
             document.getElementById('loginEmail').value = '';
             document.getElementById('loginPassword').value = '';
             document.getElementById('signupName').value = '';
+            document.getElementById('signupLocation').value = '';
+            document.getElementById('signupNationality').value = '';
             document.getElementById('signupEmail').value = '';
             document.getElementById('signupPassword').value = '';
         }
@@ -487,12 +700,13 @@ const firebaseConfig = {
         
         function signupUser() {
             const name = document.getElementById('signupName').value;
-             const name = document.getElementById('signupLocation').value;
+            const name = document.getElementById('signupLocation').value;
+            const name = document.getElementById('signupNationality').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
             const accountType = document.querySelector('input[name="accountType"]:checked').value;
             
-            if (!name ||!location || !email || !password) {
+            if (!name || !location || !nationality || !email || !password) {
                 alert('Please fill in all fields');
                 return;
             }
@@ -503,6 +717,7 @@ const firebaseConfig = {
                     return db.collection('users').doc(userCredential.user.uid).set({
                         name: name,
                         location:location,
+                        nationality:nationality,
                         email: email,
                         accountType: accountType,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -552,6 +767,7 @@ const firebaseConfig = {
             heroSection.classList.remove('hidden');
             dashboardSection.classList.add('hidden');
             marketplaceSection.classList.add('hidden');
+            informationSection.classList.add('hidden');
             chatSection.classList.add('hidden');
         }
         
@@ -559,6 +775,7 @@ const firebaseConfig = {
             heroSection.classList.add('hidden');
             dashboardSection.classList.remove('hidden');
             marketplaceSection.classList.add('hidden');
+            informationSection.classList.add('hidden');
             chatSection.classList.add('hidden');
             loadUserPosts();
         }
@@ -567,14 +784,24 @@ const firebaseConfig = {
             heroSection.classList.add('hidden');
             dashboardSection.classList.add('hidden');
             marketplaceSection.classList.remove('hidden');
+            informationSection.classList.remove('hidden');
             chatSection.classList.add('hidden');
             loadMarketplacePosts();
+        }
+
+        function showInformation() {
+            heroSection.classList.add('hidden');
+            dashboardSection.classList.add('hidden');
+            marketplaceSection.classList.remove('hidden');
+            chatSection.classList.add('hidden');
+            loadInformationPosts();
         }
         
         function showChats() {
             heroSection.classList.add('hidden');
             dashboardSection.classList.add('hidden');
             marketplaceSection.classList.add('hidden');
+            informationSection.classList.add('hidden');
             chatSection.classList.remove('hidden');
             loadChatList();
         }
@@ -640,6 +867,8 @@ const firebaseConfig = {
                 alert('Error creating post: ' + error.message);
             });
         }
+
+        
         
         function loadUserPosts() {
             if (!currentUser) return;
@@ -783,6 +1012,181 @@ const firebaseConfig = {
                     });
             }
         }
+
+
+        function showUploadBookModal() {
+            document.getElementById('uploadBookModal').classList.remove('hidden');
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postAuthor').value = '';
+            document.getElementById('postDescription').value = '';
+            document.getElementById('postCreator').value = '';
+            document.getElementById('postContact').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('imagePreview').src = '#';
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+        
+        function hideUploadBookModal() {
+            document.getElementById('uploadBookModal').classList.add('hidden');
+        }
+        
+        function createPost() {
+            const title = document.getElementById('postTitle').value;
+            const price = document.getElementById('postAuthor').value;
+            const description = document.getElementById('postDescription').value;
+            const description = document.getElementById('postCreator').value;
+            const contact = document.getElementById('postContact').value;
+            const file = document.getElementById('fileInput').files[0];
+            
+            if (!title || !author || !description || !creator || !contact) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            function loadUserPosts() {
+            if (!currentUser) return;
+            
+            const postsContainer = document.getElementById('userPosts');
+            postsContainer.innerHTML = '<p class="text-gray-500">Loading your posts...</p>';
+            
+            db.collection('posts')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        postsContainer.innerHTML = '<p class="text-gray-500">You have no posts yet. Create your first post!</p>';
+                        return;
+                    }
+                    
+                    postsContainer.innerHTML = '';
+                    querySnapshot.forEach(doc => {
+                        const post = doc.data();
+                        const postElement = upoaddBookElement(post, doc.id, true);
+                        postsContainer.appendChild(postElement);
+                    });
+                })
+                .catch(error => {
+                    postsContainer.innerHTML = '<p class="text-red-500">Error loading posts: ' + error.message + '</p>';
+                });
+        }
+        
+        function loadInformationPosts() {
+            const postsContainer = document.getElementById('informationPosts');
+            postsContainer.innerHTML = '<p class="text-gray-500">Loading posts...</p>';
+            
+            // Get all posts except the current user's
+            let query = db.collection('posts').orderBy('createdAt', 'desc');
+            
+            query.get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        postsContainer.innerHTML = '<p class="text-gray-500">No posts found matching your criteria.</p>';
+                        return;
+                    }
+                    
+                    postsContainer.innerHTML = '';
+                    
+                    // Filter posts by search term and price range
+                    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                    const priceRange = document.getElementById('priceFilter').value;
+                    
+                    querySnapshot.forEach(doc => {
+                        const post = doc.data();
+                        
+                        // Skip current user's posts
+                        if (currentUser && post.userId === currentUser.uid) {
+                            return;
+                        }
+                        
+                        // Apply search filter
+                        if (searchTerm && 
+                            !post.title.toLowerCase().includes(searchTerm) && 
+                            !post.description.toLowerCase().includes(searchTerm)) {
+                            return;
+                        }
+                        
+                        // Apply price filter
+                        if (priceRange) {
+                            const [min, max] = priceRange.split('-').map(Number);
+                            if (!isNaN(min) && !isNaN(max)) {
+                                if (post.price < min || post.price > max) return;
+                            } else if (!isNaN(min)) {
+                                if (post.price < min) return;
+                            } else if (!isNaN(max)) {
+                                if (post.price > max) return;
+                            }
+                        }
+                        
+                        const postElement = createPostElement(post, doc.id, false);
+                        postsContainer.appendChild(postElement);
+                    });
+                    
+                    if (postsContainer.innerHTML === '') {
+                        postsContainer.innerHTML = '<p class="text-gray-500">No posts found matching your criteria.</p>';
+                    }
+                })
+                .catch(error => {
+                    postsContainer.innerHTML = '<p class="text-red-500">Error loading posts: ' + error.message + '</p>';
+                });
+        }
+        
+        function createPostElement(post, postId, isOwnPost) {
+            const postElement = document.createElement('div');
+            postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden post-card transition duration-300';
+            
+            let buttonsHtml = '';
+            if (isOwnPost) {
+                buttonsHtml = `
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="deletePost('${postId}')" class="flex-1 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Delete</button>
+                    </div>
+                `;
+            } else {
+                buttonsHtml = `
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="startChat('${post.userId}', '${postId}')" class="flex-1 py-2 gradient-bg text-white rounded-lg hover:opacity-90 transition">Chat with Seller</button>
+                    </div>
+                `;
+            }
+            
+            postElement.innerHTML = `
+                ${post.imageUrl ? `
+                <div class="h-48 overflow-hidden">
+                    <img src="${post.imageUrl}" alt="${post.title}" class="w-full h-full object-cover">
+                </div>
+                ` : `
+                <div class="h-48 bg-gray-100 flex items-center justify-center">
+                    <i class="fas fa-image text-4xl text-gray-400"></i>
+                </div>
+                `}
+                <div class="p-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">${post.title}</h3>
+                    <p class="text-green-600 font-bold mb-2">${post.price.toLocaleString()} UGX</p>
+                    <p class="text-gray-600 mb-3 line-clamp-2">${post.description}</p>
+                    <p class="text-gray-600 mb-3 line-clamp-2">${post.location}</p>
+                    <p class="text-sm text-gray-500 mb-1"><i class="fas fa-user mr-2"></i> ${post.sellerName || 'Seller'}</p>
+                    <p class="text-sm text-gray-500 mb-2"><i class="fas fa-phone-alt mr-2"></i> ${post.contact}</p>
+                    ${buttonsHtml}
+                </div>
+            `;
+            
+            return postElement;
+        }
+        
+        function deletePost(postId) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                db.collection('posts').doc(postId).delete()
+                    .then(() => {
+                        loadUserPosts();
+                    })
+                    .catch(error => {
+                        alert('Error deleting post: ' + error.message);
+                    });
+            }
+        }
+        
+        
         
         // Chat functions
         function startChat(sellerId, postId) {
