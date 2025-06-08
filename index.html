@@ -284,12 +284,7 @@ const firebaseConfig = {
                         </div>
                         <p class="error" id="errorMessage"></p>
                     </div>
-
-    <script>
-        
-    </script>
-                    </div>
-                    
+                                      
                     <button onclick="uploadBook()" class="w-full gradient-bg text-white py-3 rounded-lg font-medium hover:opacity-90 transition">Upload Book</button>
                 </div>
             </div>
@@ -1055,16 +1050,16 @@ const firebaseConfig = {
                         }
                         
                         // Apply price filter
-                        if (nameRange) {
-                            const [min, max] = nameRange.split('-').map(Text);
-                            if (!isNaN(min) && !isNaN(max)) {
-                                if (post.price < min || post.price > max) return;
-                            } else if (!isNaN(min)) {
-                                if (post.price < min) return;
-                            } else if (!isNaN(max)) {
-                                if (post.price > max) return;
-                            }
-                        }
+                       // if (nameRange) {
+                        //    const [min, max] = nameRange.split('-').map(Text);
+                          //  if (!isNaN(min) && !isNaN(max)) {
+                            //    if (post.price < min || post.price > max) return;
+                          //  } else if (!isNaN(min)) {
+                            //    if (post.price < min) return;
+                          //  } else if (!isNaN(max)) {
+                            //    if (post.price > max) return;
+                           // }
+                        //}
                         
                         const postElement = createPostElement(post, doc.id, false);
                         postsContainer.appendChild(postElement);
@@ -1110,9 +1105,9 @@ const firebaseConfig = {
                 `}
                 <div class="p-4">
                     <h3 class="text-xl font-bold text-gray-800 mb-1">${post.title}</h3>
-                    <p class="text-green-600 font-bold mb-2">${post.price.toLocaleString()} UGX</p>
+                    <p class="text-green-600 font-bold mb-2">${post.author.toLocaleString()} UGX</p>
                     <p class="text-gray-600 mb-3 line-clamp-2">${post.description}</p>
-                    <p class="text-gray-600 mb-3 line-clamp-2">${post.location}</p>
+                    <p class="text-gray-600 mb-3 line-clamp-2">${post.creator}</p>
                     <p class="text-sm text-gray-500 mb-1"><i class="fas fa-user mr-2"></i> ${post.sellerName || 'Seller'}</p>
                     <p class="text-sm text-gray-500 mb-2"><i class="fas fa-phone-alt mr-2"></i> ${post.contact}</p>
                     ${buttonsHtml}
@@ -1161,6 +1156,8 @@ const firebaseConfig = {
                                 sellerId: sellerId,
                                 buyerId: currentUser.uid,
                                 postTitle: postData.title,
+                                postAuthor:postData.author,
+                                postCreator:postData.creator
                                 postPrice: postData.price,
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1326,8 +1323,31 @@ const firebaseConfig = {
             
             const messageInput = document.getElementById('messageInput');
             const messageText = messageInput.value.trim();
+            const outputParagraph = document.getElementById('output');
             
             if (!messageText) return;
+            
+            const outputDisplay = document.getElementById('outputDisplay');
+            textInput.addEventListener('keydown', function(event) {
+            
+            if (event.key === 'Enter') {
+                
+                event.preventDefault();
+
+                const inputValue = messageInput.value.trim(); 
+
+                if (inputValue) {
+                    outputDisplay.textContent = inputValue;
+                    console.log('Enter key pressed! Input received:', inputValue);
+                } else {
+                    outputDisplay.textContent = 'Please enter some text.';
+                    console.log('Enter key pressed, but input was empty.');
+                }
+
+                textInput.value = '';
+            }
+        });
+            
             
             // Add message to chat
             db.collection('chats').doc(activeChatId).collection('messages').add({
