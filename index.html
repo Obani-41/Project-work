@@ -286,59 +286,7 @@ const firebaseConfig = {
                     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const fileInput = document.getElementById('textFileInput');
-            const fileContentDiv = document.getElementById('fileContent');
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            const errorMessage = document.getElementById('errorMessage');
-
-            fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0]; // Get the first selected file
-
-                if (!file) {
-                    fileContentDiv.textContent = 'No file selected.';
-                    fileNameDisplay.textContent = '';
-                    errorMessage.textContent = '';
-                    return;
-                }
-
-                // Check if the file type is a text-based type
-                const allowedTextTypes = [
-                    'text/plain', 'text/csv', 'text/html', 'application/json',
-                    'application/xml', 'text/xml', 'text/markdown', 'text/css',
-                    'application/javascript', 'application/x-php', 'text/x-python',
-                    'text/x-docx-source', 'text/x-docxsrc', 'text/x-pdfsrc'
-                ];
-                const fileType = file.type;
-
-                if (!allowedTextTypes.includes(fileType) && !file.name.endsWith('.log')) {
-                    errorMessage.textContent = 'Please select a valid text-based file type (.txt, .csv, .html, .json, .xml, .log, etc.).';
-                    fileContentDiv.textContent = '';
-                    fileNameDisplay.textContent = '';
-                    return;
-                } else {
-                    errorMessage.textContent = ''; // Clear previous errors
-                }
-
-
-                fileNameDisplay.textContent = `Selected File: ${file.name} (Size: ${file.size} bytes)`;
-
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-                    // Display the content of the file
-                    fileContentDiv.textContent = e.target.result;
-                };
-
-                reader.onerror = () => {
-                    fileContentDiv.textContent = 'Error reading file.';
-                    errorMessage.textContent = 'Could not read the selected file.';
-                };
-
-                // Read the file as text
-                reader.readAsText(file);
-            });
-        });
+        
     </script>
                     </div>
                     
@@ -549,7 +497,7 @@ const firebaseConfig = {
                 }
             });
 
-
+//Uploading text files
             document.addEventListener('DOMContentLoaded', () => {
             const fileInput = document.getElementById('textFileInput');
             const fileContentDiv = document.getElementById('fileContent');
@@ -571,7 +519,7 @@ const firebaseConfig = {
                     'text/plain', 'text/csv', 'text/html', 'application/json',
                     'application/xml', 'text/xml', 'text/markdown', 'text/css',
                     'application/javascript', 'application/x-php', 'text/x-python',
-                    'text/x-docx-source', 'text/x-docxsrc', 'text/x-pdfsrc'
+                    'text/x-docx-source', 'text/x-epub-src', 'text/x-pdf-src'
                 ];
                 const fileType = file.type;
 
@@ -1022,7 +970,7 @@ const firebaseConfig = {
             document.getElementById('postCreator').value = '';
             document.getElementById('postContact').value = '';
             document.getElementById('fileInput').value = '';
-            document.getElementById('imagePreview').src = '#';
+            document.getElementById('imagePreview').src = '';
             document.getElementById('imagePreview').classList.add('hidden');
         }
         
@@ -1089,7 +1037,7 @@ const firebaseConfig = {
                     
                     // Filter posts by search term and price range
                     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                    const priceRange = document.getElementById('priceFilter').value;
+                    const nameRange = document.getElementById('nameFilter').value;
                     
                     querySnapshot.forEach(doc => {
                         const post = doc.data();
@@ -1107,8 +1055,8 @@ const firebaseConfig = {
                         }
                         
                         // Apply price filter
-                        if (priceRange) {
-                            const [min, max] = priceRange.split('-').map(Number);
+                        if (nameRange) {
+                            const [min, max] = nameRange.split('-').map(Text);
                             if (!isNaN(min) && !isNaN(max)) {
                                 if (post.price < min || post.price > max) return;
                             } else if (!isNaN(min)) {
